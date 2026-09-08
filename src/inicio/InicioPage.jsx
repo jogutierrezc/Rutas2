@@ -9,6 +9,10 @@ import heroTitleCream from "../assets/mcp/hero_title_cream.svg";
 import heroTitlePatrimonial from "../assets/mcp/hero_title_patrimonial.svg";
 import chevronIcon from "../assets/mcp/icon_chevron_scroll.svg";
 import chevronIconCream from "../assets/mcp/icon_chevron_scroll_cream.svg";
+import logoUdesHeroWhite from "../assets/mcp/logo_udes_hero.webp";
+import logoUdesHeroBlack from "../assets/mcp/logo_udes_hero_black.webp";
+import logoDgHeroWhite from "../assets/mcp/logo_dg_footer.webp";
+import logoDgHeroBlack from "../assets/mcp/logo_dg_black.webp";
 import TopBar from "../TopBar";
 import Footer from "../Footer";
 import CTASection from "../CTASection";
@@ -172,6 +176,8 @@ const HERO_STATES = [
     chevron: chevronIcon,
     bg: "#fff4db",
     introColor: "#2c1a0e",
+    udesLogo: logoUdesHeroBlack,
+    dgLogo: logoDgHeroBlack,
   },
   {
     id: "gastronomica",
@@ -181,6 +187,8 @@ const HERO_STATES = [
     chevron: chevronIconCream,
     bg: "rgb(var(--ds-orange))",
     introColor: "rgb(var(--ds-cream))",
+    udesLogo: logoUdesHeroWhite,
+    dgLogo: logoDgHeroWhite,
   },
   {
     id: "patrimonial",
@@ -190,6 +198,8 @@ const HERO_STATES = [
     chevron: chevronIconCream,
     bg: "rgb(var(--ds-forest))",
     introColor: "rgb(var(--ds-cream))",
+    udesLogo: logoUdesHeroWhite,
+    dgLogo: logoDgHeroWhite,
   },
   {
     id: "mistico",
@@ -199,6 +209,8 @@ const HERO_STATES = [
     chevron: chevronIconCream,
     bg: "rgb(var(--ds-purple))",
     introColor: "rgb(var(--ds-cream))",
+    udesLogo: logoUdesHeroWhite,
+    dgLogo: logoDgHeroWhite,
   },
 ];
 
@@ -218,6 +230,10 @@ function Maps() {
   }, []);
 
   const active = HERO_STATES[Math.max(stateIndex, 0)];
+
+  const scrollToNextSection = () => {
+    document.getElementById("galeria")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <section
@@ -253,25 +269,61 @@ function Maps() {
         <p className="maps-section__intro" style={{ color: active.introColor }}>
           Bienvenido a recorrer las rutas del viejo Valle, aquí mantenemos la herencia viva de un patrimonio que todavía se conserva.
         </p>
+      </div>
 
-        <div className="maps-section__cta-group">
+      <div className="maps-section__cta-group">
+        <div className="maps-section__button-row">
+          <span className="maps-section__institutional-logo-slot">
+            {HERO_STATES.map((state, i) => (
+              <img
+                key={`udes-${state.id}`}
+                src={state.udesLogo}
+                alt={i === 0 ? "Universidad de Santander - UDES" : ""}
+                aria-hidden={i === 0 ? undefined : true}
+                className={`maps-section__institutional-logo${i === stateIndex ? " maps-section__institutional-logo--active" : ""}`}
+                loading="lazy"
+                decoding="async"
+              />
+            ))}
+          </span>
+
           <button
             className="maps-section__cta"
             onClick={() => navigate("/rutas-interactivas")}
           >
             Explora el mapa
           </button>
-          <span className="maps-section__chevron" aria-hidden="true">
+
+          <span className="maps-section__institutional-logo-slot">
             {HERO_STATES.map((state, i) => (
               <img
-                key={`chevron-${state.id}`}
-                src={state.chevron}
-                alt=""
-                className={`maps-section__chevron-icon${i === stateIndex ? " maps-section__chevron-icon--active" : ""}`}
+                key={`dg-${state.id}`}
+                src={state.dgLogo}
+                alt={i === 0 ? "Diseño Gráfico - Campus Valledupar" : ""}
+                aria-hidden={i === 0 ? undefined : true}
+                className={`maps-section__institutional-logo${i === stateIndex ? " maps-section__institutional-logo--active" : ""}`}
+                loading="lazy"
+                decoding="async"
               />
             ))}
           </span>
         </div>
+
+        <button
+          type="button"
+          className="maps-section__chevron"
+          aria-label="Ir a la siguiente sección"
+          onClick={scrollToNextSection}
+        >
+          {HERO_STATES.map((state, i) => (
+            <img
+              key={`chevron-${state.id}`}
+              src={state.chevron}
+              alt=""
+              className={`maps-section__chevron-icon${i === stateIndex ? " maps-section__chevron-icon--active" : ""}`}
+            />
+          ))}
+        </button>
       </div>
     </section>
   );
