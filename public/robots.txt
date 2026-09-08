@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /admin
+Disallow: /admin/panel
+
+Sitemap: https://rutas2-eight.vercel.app/sitemap.xml

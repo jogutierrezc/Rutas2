@@ -1,0 +1,41 @@
+.sitemap-page__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.sitemap-page__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sitemap-page__list li {
+  margin-bottom: 10px;
+}
+
+.sitemap-page__list a {
+  color: #2b2b2b;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.sitemap-page__list a:hover {
+  color: #b84a12;
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .sitemap-page__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .sitemap-page__grid {
+    grid-template-columns: 1fr;
+  }
+}

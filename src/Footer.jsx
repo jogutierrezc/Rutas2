@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import logoFooter from "./assets/mcp/logo_footer.png";
+import logoUdes from "./assets/mcp/logo_udes_footer.webp";
+import logoDg from "./assets/mcp/logo_dg_footer.webp";
 import iconInstagram from "./assets/mcp/icon_instagram.svg";
 import iconYoutube from "./assets/mcp/icon_youtube.svg";
 import iconLocation from "./assets/mcp/icon_location.svg";
@@ -45,12 +47,34 @@ export default function Footer() {
         </div>
 
         <div>
+          <h3 className="footer__col-title">Menú principal</h3>
+          <Link to="/inicio" className="footer__link">
+            Inicio
+          </Link>
+          <Link to="/mapas" className="footer__link">
+            Mapa
+          </Link>
+          <Link to="/galeria" className="footer__link">
+            Galería
+          </Link>
+          <Link to="/acerca-de" className="footer__link">
+            Acerca de
+          </Link>
+          <Link to="/glosario" className="footer__link">
+            Glosario
+          </Link>
+        </div>
+
+        <div>
           <h3 className="footer__col-title">Información</h3>
           <Link to="/terminos-y-condiciones" className="footer__link">
             Términos y condiciones
           </Link>
           <Link to="/terminos-de-uso-y-cookies" className="footer__link">
             Términos de uso y cookies
+          </Link>
+          <Link to="/mapa-del-sitio" className="footer__link">
+            Mapa del sitio
           </Link>
         </div>
 
@@ -68,7 +92,12 @@ export default function Footer() {
       </div>
 
       <div className="footer__divider">
-        <p className="footer__copy">© 2026 Rutas de Valledupar. Todos los derechos reservados. Hecho con &#x2764; en Colombia.</p>
+        <div className="footer__institutional">
+          <img src={logoUdes} alt="Universidad de Santander - UDES" className="footer__udes-logo" loading="lazy" decoding="async" />
+          <span className="footer__institutional-divider" aria-hidden="true" />
+          <img src={logoDg} alt="Diseño Gráfico - Campus Valledupar" className="footer__dg-logo" loading="lazy" decoding="async" />
+          <p className="footer__copy">© 2026 Rutas de Valledupar. Universidad de Santander Campus Valledupar. Todos los derechos reservados. Hecho con &#x2764; en Colombia.</p>
+        </div>
         <button className="footer__back-top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Volver arriba">
           ↑
         </button>

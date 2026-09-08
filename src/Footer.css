@@ -6,7 +6,7 @@
 
 .footer__grid {
   display: grid;
-  grid-template-columns: 1.25fr 1fr 1fr 1fr;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
   gap: 44px;
   margin-bottom: 30px;
 }
@@ -88,6 +88,34 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
+}
+
+.footer__institutional {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.footer__udes-logo {
+  height: 34px;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.footer__institutional-divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.footer__dg-logo {
+  height: 26px;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .footer__copy {

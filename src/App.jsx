@@ -24,6 +24,7 @@ const MisAportes = lazy(() => import("./MisAportes"));
 const AcercaDe = lazy(() => import("./acerca de/AcercaDe"));
 const TermsPage = lazy(() => import("./TermsPage"));
 const TermsCookies = lazy(() => import("./TermsCookies"));
+const SitemapPage = lazy(() => import("./SitemapPage"));
 const RutasInteractivas = lazy(() => import("./rutas-interactivas/RutasInteractivas"));
 const AdminLogin = lazy(() => import("./admin/AdminLogin"));
 const AdminPanel = lazy(() => import("./admin/AdminPanel"));
@@ -67,6 +68,7 @@ export default function App() {
               <Route path="/acerca-de" element={<AcercaDe />} />
               <Route path="/terminos-y-condiciones" element={<TermsPage />} />
               <Route path="/terminos-de-uso-y-cookies" element={<TermsCookies />} />
+              <Route path="/mapa-del-sitio" element={<SitemapPage />} />
               <Route path="/rutas-interactivas" element={<RutasInteractivas />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </>
