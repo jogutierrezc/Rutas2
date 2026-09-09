@@ -69,7 +69,9 @@
 
 .ri-selector__description {
   font-family: var(--ds-font-body);
-  font-size: clamp(14px, 1.5vw, 17px);
+  /* Standardized to the .glossary__heading p reading-text reference (was
+     clamp(14px, 1.5vw, 17px) -- resolved to 14px on mobile). */
+  font-size: clamp(16px, 1.5vw, 17px);
   line-height: 1.7;
   color: #5A4A42;
   max-width: 520px;
@@ -422,7 +424,9 @@
 
 .rutas-interactivas__accordion-subtitle {
   font-family: var(--ds-font-body);
-  font-size: clamp(15px, 1.6vw, 18px);
+  /* Standardized to the .glossary__heading p reading-text reference (was
+     clamp(15px, 1.6vw, 18px) -- resolved to 15px on mobile). */
+  font-size: clamp(16px, 1.6vw, 18px);
   line-height: 1.7;
   color: #6b5b4a;
   max-width: 540px;
@@ -1439,7 +1443,8 @@
 
 .rutas-interactivas__download-desc {
   font-family: var(--ds-font-body);
-  font-size: 15px;
+  /* Standardized to the .glossary__heading p reading-text reference (was 15px). */
+  font-size: 16px;
   line-height: 1.7;
   color: #6b5b4a;
   margin: 0 0 28px;
@@ -1611,7 +1616,8 @@
   .rutas-interactivas__map-desc {
     padding: 0 12px;
     margin-bottom: 8px;
-    font-size: 12px;
+    /* Standardized to the .glossary__heading p reading-text reference (was 12px). */
+    font-size: 16px;
   }
 
   .rimap-container {

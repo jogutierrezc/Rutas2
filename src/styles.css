@@ -412,15 +412,19 @@
 }
 
 .maps-section__cta {
-  padding: 10px 24px;
+  /* Sizing aligned to .glossary__cta ("Conoce más palabras") as the mobile
+     reference: same clamp-based font-size and padding, instead of the hard
+     breakpoint shrinks below (900px/600px) that made this button noticeably
+     smaller/tighter than its glossary counterpart on the same screen. */
+  padding: 10px 20px;
   background: #2c1a0e;
   color: rgb(var(--ds-cream));
   border: none;
   border-radius: 6px;
   font-family: var(--ds-font-display);
-  font-size: 20px;
+  font-size: clamp(16px, 2vw, 20px);
   font-weight: 400;
-  letter-spacing: 1.8px;
+  letter-spacing: 2.16px;
   text-transform: uppercase;
   cursor: pointer;
   transition: background-color var(--ds-duration-base) var(--ds-ease-standard),
@@ -514,6 +518,12 @@
   opacity: 1;
 }
 
+/* Only shown on mobile (600px breakpoint below), where the two logos sit
+   together as one group instead of at opposite edges of the row. */
+.maps-section__institutional-divider {
+  display: none;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .maps-section {
@@ -539,10 +549,6 @@
     font-size: clamp(12px, 2.2vw, 15px);
   }
 
-  .maps-section__cta {
-    padding: 8px 20px;
-    font-size: 17px;
-  }
 }
 
 @media (max-width: 600px) {
@@ -562,24 +568,25 @@
 
   /* Hero map block grown 30% on mobile (61% -> 79% width; logo scaled to match),
      plus another 30% on top of that in height alone (taller box, same width --
-     map image crops via object-fit: cover instead of stretching). */
+     map image crops via object-fit: cover instead of stretching), then a
+     further 20% on both axes (79% -> 95% width, 1056 -> 1267 height), then
+     another 30% in height alone (1267 -> 1647), then another 20% in height
+     alone (1647 -> 1976), then dialed back 30% in height (1976 -> 1383) once
+     that was too tall -- width stays at 95% throughout. */
   .maps-section__map-area {
-    width: min(1181px, 79%);
-    aspect-ratio: 1402 / 1056;
+    width: min(1181px, 95%);
+    aspect-ratio: 1402 / 1383;
   }
 
   .maps-section__logo {
     width: min(400px, 65vw);
   }
 
-  .maps-section__cta {
-    padding: 6px 18px;
-    font-size: 14px;
-  }
-
   .maps-section__intro {
     max-width: 300px;
-    font-size: 11px;
+    /* Standardized to the .glossary__heading p reading-text reference
+       (was 14px, itself bumped up from an earlier 11px). */
+    font-size: 16px;
   }
 
   .maps-section__chevron {
@@ -592,13 +599,44 @@
     height: 20px;
   }
 
-  /* UDES badge is a ~7:1 banner -- side-by-side at any legible height
-     overflows a narrow screen, so stack instead of shrinking to illegible. */
+  /* Mobile: UDES + divider + Diseño Gráfico sit together as one centered
+     group on row 1 (three auto-sized columns, centered as a block via
+     justify-content -- not spread across a 1fr/1fr split like before),
+     button on row 2. justify-items:center keeps the button from stretching
+     to fill its spanned area (the old flex-basis:100% hack sized the
+     button's actual box to the full row width instead of just forcing the
+     line break, which is the bug this grid approach avoids). */
   .maps-section__button-row {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    grid-template-areas:
+      "logo1 divider logo2"
+      "btn btn btn";
+    justify-content: center;
+    justify-items: center;
     align-items: center;
-    gap: 14px;
+    column-gap: 12px;
+    row-gap: 14px;
+  }
+
+  .maps-section__button-row .maps-section__institutional-logo-slot:first-child {
+    grid-area: logo1;
+  }
+
+  .maps-section__button-row .maps-section__institutional-divider {
+    grid-area: divider;
+    display: block;
+    width: 1px;
+    height: 26px;
+    background: rgba(128, 128, 128, 0.45);
+  }
+
+  .maps-section__button-row .maps-section__institutional-logo-slot:last-child {
+    grid-area: logo2;
+  }
+
+  .maps-section__button-row .maps-section__cta {
+    grid-area: btn;
   }
 
   .maps-section__institutional-logo-slot {
@@ -641,12 +679,30 @@
   margin: 0 auto;
 }
 
+.glossary__carousel {
+  position: relative;
+}
+
 .glossary__grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(256px, 1fr));
   gap: 28px;
   justify-items: center;
   padding-top: 28px;
+}
+
+/* display: contents on desktop keeps these two wrapper levels (added for
+   the mobile carousel) invisible to the grid -- GlossaryItem's own root
+   (.glossary__item) is still the direct grid item, so desktop layout is
+   byte-identical to before the carousel wrappers existed. */
+.glossary__track,
+.glossary__slide {
+  display: contents;
+}
+
+.glossary__carousel-arrow,
+.glossary__dots {
+  display: none;
 }
 
 @media (max-width: 1180px) {
@@ -656,8 +712,83 @@
 }
 
 @media (max-width: 760px) {
+  /* Mobile: .glossary__grid becomes the overflow-hidden carousel viewport,
+     .glossary__track the sliding flex row (transform driven by React state),
+     .glossary__slide one full-width pane per card. Top/bottom padding here
+     (rather than 0) gives the hover/active card's transform (translateY up
+     to 18px, plus the scale/rotate around transform-origin:bottom pushing
+     its top edge up further) room to render inside the overflow:hidden
+     viewport instead of getting clipped at its top/bottom edge. */
   .glossary__grid {
-    grid-template-columns: 1fr;
+    display: block;
+    overflow: hidden;
+    padding: 44px 0;
+  }
+
+  .glossary__track {
+    display: flex;
+    transition: transform 400ms var(--ds-ease-standard, ease);
+  }
+
+  .glossary__slide {
+    display: flex;
+    flex: 0 0 100%;
+    justify-content: center;
+  }
+
+  .glossary__carousel-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: none;
+    color: var(--dark, #1a0f08);
+    font-size: 34px;
+    line-height: 1;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .glossary__carousel-arrow:hover {
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  .glossary__carousel-arrow--prev {
+    left: 4px;
+  }
+
+  .glossary__carousel-arrow--next {
+    right: 4px;
+  }
+
+  .glossary__dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .glossary__dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .glossary__dot--active {
+    background: #000;
+    transform: scale(1.3);
   }
 }
 
@@ -849,10 +980,13 @@
   text-align: center;
   font-feature-settings: 'liga' off;
   font-family: var(--font-heritage);
-  font-size: clamp(20px, 3.5vw, 40px);
+  /* Standardized to match .glossary__heading h2's size exactly (was
+     clamp(20px, 3.5vw, 40px) / clamp(21px, 3.25vw, 39px) -- noticeably
+     smaller on mobile, 20px vs 32px, despite an identical 40px cap). */
+  font-size: clamp(32px, 5vw, 40px);
   font-style: normal;
   font-weight: 400;
-  line-height: clamp(21px, 3.25vw, 39px);
+  line-height: clamp(28px, 3.5vw, 39px);
   letter-spacing: 1px;
   max-width: 700px;
   margin: 0 auto 14px;
@@ -862,10 +996,14 @@
   color: #262626;
   text-align: center;
   font-family: var(--ds-font-body);
-  font-size: clamp(14px, 1.6vw, 16px);
+  font-size: 16px;
   font-style: normal;
   font-weight: 100;
-  line-height: clamp(26px, 3.4vw, 40px);
+  /* Was clamp(26px, 3.4vw, 40px) -- a ~26px line-height against 14px text
+     (ratio ~1.86) left the two wrapped lines looking disconnected. 1.4 is
+     a normal reading ratio, matching how other paragraph text in this file
+     (e.g. .gallery-slide__info p) is set. */
+  line-height: 1.4;
 }
 
 .gallery-carousel {
@@ -922,21 +1060,44 @@
   gap: 16px;
 }
 
+.gallery-slide__info {
+  /* min-width: 0 lets this shrink/wrap inside the flex bar instead of its
+     text's intrinsic width pushing the play button off its fixed size. */
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
 .gallery-slide__info h3 {
   color: #FFFCE6;
   font-family: "Heritage Sans", Georgia, serif;
   font-size: clamp(22px, 3.5vw, 34px);
   font-style: normal;
   font-weight: 400;
-  line-height: clamp(18px, 2.8vw, 35px);
+  /* Was clamp(18px, 2.8vw, 35px) -- on mobile that resolved to an 18px
+     line-height under a 22px font-size, so a wrapped 2-line title (e.g.
+     "Fundación Escuela Ambiental del Cesar") visually collided with itself.
+     26px floor keeps it comfortably above the font-size. */
+  line-height: clamp(26px, 2.8vw, 35px);
 }
 
 .gallery-slide__info p {
   color: #FFFCE6;
   font-family: var(--ds-font-body);
-  font-size: clamp(14px, 2vw, 16px);
+  /* Standardized to a fixed size (was clamp(14px, 2vw, 16px)). */
+  font-size: 16px;
   font-style: normal;
   font-weight: 100;
+  line-height: 1.4;
+}
+
+/* Truncated with an ellipsis past 3 lines, instead of shrinking font-size
+   to force a fit (that approach made long descriptions illegibly tiny). */
+.gallery-slide__info-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .gallery-title {
@@ -954,6 +1115,10 @@
 }
 
 .gallery-play-btn {
+  /* flex-shrink: 0 is the actual fix -- without it, a long description in
+     the flex bar next to this button could shrink its width below 62px
+     while height stayed fixed, squashing the circle into an oval. */
+  flex-shrink: 0;
   width: 62px;
   height: 62px;
   border-radius: 50%;
@@ -961,6 +1126,16 @@
   background: rgba(255, 255, 255, 0.2);
   color: #fff;
   font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.gallery-play-btn__icon {
+  /* Nudge the triangle glyph visually centered -- its own glyph box isn't
+     symmetric, so a plain center leaves it looking left-shifted. */
+  transform: translateX(2px);
 }
 
 .gallery-nav {
@@ -981,6 +1156,12 @@
   background: rgba(255, 255, 255, 0.15);
   color: #fff;
   cursor: pointer;
+}
+
+/* Mobile-only bottom navigation for the gallery carousel -- see the 760px
+   breakpoint below for when it actually becomes visible. */
+.gallery-bottom-nav {
+  display: none;
 }
 
 .cta-section {
@@ -1042,7 +1223,9 @@
   color: #FFFCE6;
   text-align: center;
   font-family: var(--ds-font-body);
-  font-size: clamp(14px, 1.8vw, 16px);
+  /* Standardized to the .glossary__heading p reading-text reference (was
+     clamp(14px, 1.8vw, 16px) -- resolved to 14px on mobile). */
+  font-size: clamp(16px, 1.8vw, 16px);
   font-style: normal;
   font-weight: 100;
   /* line-height: clamp(22px, 2.8vw, 32px); */
@@ -1182,7 +1365,8 @@
   }
 
   .gallery-carousel {
-    height: 440px;
+    /* +25% (was 440px). */
+    height: 550px;
   }
 
   .gallery-title {
@@ -1196,10 +1380,79 @@
     display: none;
   }
 
-  .footer__grid,
-  .footer__divider {
+  /* Replaces .gallery-nav on mobile: one bar below the carousel instead of
+     the desktop's side rail, so there's still a way to navigate manually. */
+  .gallery-bottom-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 18px 24px 0;
+  }
+
+  .gallery-bottom-nav__arrow {
+    flex-shrink: 0;
+    border: none;
+    background: none;
+    color: var(--dark, #1a0f08);
+    font-size: 30px;
+    line-height: 1;
+    padding: 4px 6px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .gallery-bottom-nav__arrow:hover {
+    transform: scale(1.1);
+  }
+
+  .gallery-bottom-nav__progress {
+    flex: 1 1 auto;
+    height: 3px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+  }
+
+  .gallery-bottom-nav__progress-fill {
+    height: 100%;
+    background: var(--dark, #1a0f08);
+    transition: width 0.3s var(--ds-ease-standard, ease);
+  }
+
+  .gallery-bottom-nav__counter {
+    flex-shrink: 0;
+    font-family: var(--ds-font-body);
+    font-size: 12px;
+    color: var(--dark, #1a0f08);
+    white-space: nowrap;
+  }
+
+  /* Single centered column, titles included.
+     Kept in sync with the same breakpoint in Footer.css -- see the note
+     there; this duplicate exists because Footer.css hasn't been merged
+     into this shared stylesheet yet. */
+  .footer__grid {
     grid-template-columns: 1fr;
-    display: grid;
-    justify-content: initial;
+    text-align: center;
+  }
+
+  .footer__socials,
+  .footer__contact-item {
+    justify-content: center;
+  }
+
+  /* Divider row (institutional logos + copyright, then back-to-top) stacks
+     and centers too instead of the desktop's flex space-between. */
+  .footer__divider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .footer__institutional {
+    justify-content: center;
   }
 }

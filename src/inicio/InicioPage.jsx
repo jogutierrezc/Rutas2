@@ -287,6 +287,11 @@ function Maps() {
             ))}
           </span>
 
+          {/* Hidden on desktop (the two logos sit at opposite edges there);
+              only shown on mobile, where the logos sit together and this
+              separates them -- see the 600px breakpoint in styles.css. */}
+          <span className="maps-section__institutional-divider" aria-hidden="true" />
+
           <button
             className="maps-section__cta"
             onClick={() => navigate("/rutas-interactivas")}
@@ -330,6 +335,11 @@ function Maps() {
 }
 
 function Glossary() {
+  const [slide, setSlide] = useState(0);
+
+  const goPrev = () => setSlide((prev) => (prev - 1 + glossaryCards.length) % glossaryCards.length);
+  const goNext = () => setSlide((prev) => (prev + 1) % glossaryCards.length);
+
   return (
     <section id="glosario" className="glossary reveal">
       <div className="glossary__heading">
@@ -338,19 +348,49 @@ function Glossary() {
           Por eso en este Glosario encontrarás más de 200 palabras que te ayudarán a entender el hablao de los vallenatos.
         </p>
       </div>
-      <div className="glossary__grid">
-        {glossaryCards.map((card) => (
-          <GlossaryItem
+
+      {/* .glossary__grid is a static 4-up grid on desktop; on mobile it
+          becomes the overflow-hidden viewport for a one-card-at-a-time
+          carousel, with .glossary__track sliding via transform and the
+          arrows/dots below only rendering (via CSS) at that breakpoint. */}
+      <div className="glossary__carousel">
+        <button className="glossary__carousel-arrow glossary__carousel-arrow--prev" onClick={goPrev} aria-label="Palabra anterior">
+          ‹
+        </button>
+
+        <div className="glossary__grid">
+          <div className="glossary__track" style={{ transform: `translateX(-${slide * 100}%)` }}>
+            {glossaryCards.map((card) => (
+              <div className="glossary__slide" key={card.id}>
+                <GlossaryItem
+                  title={card.title}
+                  type={card.type}
+                  meaning={card.meaning}
+                  color={card.color}
+                  borderColor={card.borderColor}
+                  imageUrl={card.imageUrl}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <button className="glossary__carousel-arrow glossary__carousel-arrow--next" onClick={goNext} aria-label="Palabra siguiente">
+          ›
+        </button>
+      </div>
+
+      <div className="glossary__dots">
+        {glossaryCards.map((card, i) => (
+          <button
             key={card.id}
-            title={card.title}
-            type={card.type}
-            meaning={card.meaning}
-            color={card.color}
-            borderColor={card.borderColor}
-            imageUrl={card.imageUrl}
+            className={`glossary__dot${i === slide ? " glossary__dot--active" : ""}`}
+            onClick={() => setSlide(i)}
+            aria-label={`Ir a ${card.title}`}
           />
         ))}
       </div>
+
       <div className="glossary__cta-wrap">
         <button className="glossary__cta">Conoce más palabras</button>
       </div>
@@ -506,9 +546,13 @@ function Gallery() {
             <div className="gallery-slide__bar" style={{ backgroundColor: slide.accentColor }}>
               <div className="gallery-slide__info">
                 <h3>{slide.subtitle}</h3>
-                <p>{slide.sub2}</p>
+                <p className="gallery-slide__info-desc">{slide.sub2}</p>
               </div>
-              {slide.hasPlay ? <button className="gallery-play-btn">&#9658;</button> : null}
+              {slide.hasPlay ? (
+                <button className="gallery-play-btn">
+                  <span className="gallery-play-btn__icon">&#9658;</span>
+                </button>
+              ) : null}
             </div>
           </div>
           );
@@ -526,6 +570,39 @@ function Gallery() {
             &#9660;
           </button>
         </div>
+      </div>
+
+      {/* Mobile-only replacement for .gallery-nav (hidden below 760px) --
+          arrows + dots in one bar under the carousel instead of the desktop
+          side rail, since there was previously no way to navigate on mobile
+          at all once .gallery-nav disappeared. */}
+      <div className="gallery-bottom-nav">
+        <button
+          className="gallery-bottom-nav__arrow"
+          onClick={() => setCurrent((prev) => (prev - 1 + slides.length) % slides.length)}
+          aria-label="Foto anterior"
+        >
+          ‹
+        </button>
+        {/* A dot per slide doesn't scale -- the live gallery has 50+ items,
+            not the handful a dot row assumes -- so a single progress bar
+            plus a counter stands in for it instead. */}
+        <div className="gallery-bottom-nav__progress">
+          <div
+            className="gallery-bottom-nav__progress-fill"
+            style={{ width: `${((current + 1) / slides.length) * 100}%` }}
+          />
+        </div>
+        <span className="gallery-bottom-nav__counter">
+          {current + 1} / {slides.length}
+        </span>
+        <button
+          className="gallery-bottom-nav__arrow"
+          onClick={() => setCurrent((prev) => (prev + 1) % slides.length)}
+          aria-label="Foto siguiente"
+        >
+          ›
+        </button>
       </div>
     </section>
   );

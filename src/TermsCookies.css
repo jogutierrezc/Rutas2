@@ -282,7 +282,8 @@
 .terms-cookies__body {
   color: #2b2b2b;
   font-family: 'Inter', sans-serif;
-  font-size: 15px;
+  /* Standardized to the .glossary__heading p reading-text reference (was 15px). */
+  font-size: 16px;
   line-height: 1.8;
   max-width: 800px;
   margin: 0 auto;
