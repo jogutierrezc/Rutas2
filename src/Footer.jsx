@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import logoFooter from "./assets/mcp/logo_footer.png";
 import logoUdes from "./assets/mcp/logo_udes_footer.webp";
@@ -9,6 +10,30 @@ import iconMail from "./assets/mcp/icon_mail.svg";
 import "./Footer.css";
 
 export default function Footer() {
+  const [showBackTop, setShowBackTop] = useState(false);
+  const hideTimerRef = useRef(null);
+
+  // Visible once scrolled past 400px, but only while scrolling is actually
+  // happening -- 3s of no further scroll hides it again, same idle pattern
+  // video players use for their controls, so it doesn't sit there forever
+  // covering content once the user has stopped to read.
+  useEffect(() => {
+    const onScroll = () => {
+      const pastThreshold = window.scrollY > 400;
+      setShowBackTop(pastThreshold);
+      clearTimeout(hideTimerRef.current);
+      if (pastThreshold) {
+        hideTimerRef.current = setTimeout(() => setShowBackTop(false), 3000);
+      }
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      clearTimeout(hideTimerRef.current);
+    };
+  }, []);
+
   return (
     <footer id="footer" className="footer">
       <div className="footer__grid">
@@ -47,7 +72,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="footer__col-title">Menú principal</h3>
+          <h3 className="footer__col-title">Navega</h3>
           <Link to="/inicio" className="footer__link">
             Inicio
           </Link>
@@ -98,10 +123,19 @@ export default function Footer() {
           <img src={logoDg} alt="Diseño Gráfico - Campus Valledupar" className="footer__dg-logo" loading="lazy" decoding="async" />
           <p className="footer__copy">© 2026 Rutas de Valledupar. Universidad de Santander Campus Valledupar. Todos los derechos reservados. Hecho con &#x2764; en Colombia.</p>
         </div>
-        <button className="footer__back-top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Volver arriba">
-          ↑
-        </button>
       </div>
+
+      {/* Floating, not part of the divider's flow anymore: fixed to the
+          viewport (right on desktop, centered on mobile via CSS) and only
+          shown once the page has scrolled, instead of only being reachable
+          once the footer itself scrolls into view. */}
+      <button
+        className={`footer__back-top-float${showBackTop ? " footer__back-top-float--visible" : ""}`}
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        aria-label="Volver arriba"
+      >
+        ↑
+      </button>
     </footer>
   );
 }
